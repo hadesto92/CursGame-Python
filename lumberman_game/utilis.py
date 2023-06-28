@@ -7,12 +7,13 @@ def scale(self, old_size: tuple, new_size: tuple):
     multipler_x = new_size[0]/old_size[0]
     multipler_y = new_size[1]/old_size[1]
 
-    #Nadanie nowej pozycji
-    multipler_pos = self.pos[0]/old_size[0]
-    new_pos = new_size[0]*multipler_pos, self.pos[1]
+    #Nadanie nowej pozycji pocentowo do poprzedniej wielkości ekranu
+    multipler_pos_x = self.pos[0]/old_size[0]
+    multipler_pos_y = self.pos[1]/old_size[1]
+    new_pos = new_size[0]*multipler_pos_x, new_size[1]*multipler_pos_y
 
-    print('Pozycja początkowa',self.pos)
-    print('Nowa pozycja',new_pos)
+    #print('Pozycja początkowa',self.pos)
+    #print('Nowa pozycja',new_pos)
 
     #Tworzenie nowego obiektu który zastąpi stary posiadając tą samą pozycję o nowej skali
     new_actor = Actor(self.image, pos=new_pos, anchor=self.anchor)
@@ -20,6 +21,8 @@ def scale(self, old_size: tuple, new_size: tuple):
     new_height = int(self.height * multipler_y)
 
     self._surf = pygame.transform.scale(new_actor._surf, (new_width, new_height))
+    self.x = new_pos[0] #linijka odpowiedzialna za to aby obiekty zachowały swoje położenie na ekranie procentowo względem poprzedniego rozmieszczenia
+    self.y = new_pos[1]
     self._update_pos()
 
 #Funkcja odpowiedzialna za przeskalowanie wsystkich obiektów

@@ -14,12 +14,14 @@ def on_key_down(key):
         if is_fullscreen():
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-            scale_to(SCALABLE, surface_size, (WIDTH, HEIGHT))
+            scale_to(SCALABLE, surface_size, (WIDTH, HEIGHT), True)
         else:
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), pygame.FULLSCREEN)
-            scale_to(SCALABLE, surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT))
+            scale_to(SCALABLE, surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
         change_fullscreen()
+        bee_anim.set_screen(screen)
+        bee_anim.reset_animation()
 
 def update():
     global bee_anim
@@ -37,6 +39,8 @@ def draw():
     screen.fill(BLACK)
     backgraound.draw()
     bee.draw()
+    trunk.draw()
+    print("Trunk pos: ", trunk.pos, ", trunk anchor: ", trunk.anchor, "Wielkość ekranu: ", screen.width, ' ' ,screen.height)
     for cloud in clouds:
         cloud.draw()
 

@@ -25,9 +25,11 @@ FULLSCREEN_HEIGHT = monitor.height
 backgraound = Actor('background.png', pos=(0, 0), anchor=(0, 0))
 clouds = [Actor(f'chmurka_0{i}', pos=(i*100, 0), anchor=(0, 0)) for i in range (1, 5)]
 bee = Actor('bee_01', pos=(WIDTH/2, HEIGHT/2), anchor=(0, 0))
+trunk_temp = Actor('pien_solo')
+trunk = Actor('pien_solo', pos=(WIDTH/2, 0), anchor=(0.5, 0))
 
 #Deklaracja obiektów do skalowania
-SCALABLE = [backgraound, bee] + clouds
+SCALABLE = [backgraound, bee, trunk] + clouds
 
 #Deklaracja kolorów:
 BLACK = 0, 0, 0

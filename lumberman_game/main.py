@@ -4,10 +4,12 @@ from static import *
 from utilis import scale_to, mirror_flip
 from typing import Optional
 from bee_behaviour import BeeAnimation
-
-scale_to(SCALABLE, (BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
+from branch_provider import BranchProvider
 
 bee_anim: Optional[BeeAnimation] = None
+branches: Optional[BranchProvider] = None
+
+scale_to(SCALABLE, (BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
 
 # Zmienne statyczne
 hit = False
@@ -24,11 +26,13 @@ def on_key_down():
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
             scale_to(SCALABLE, surface_size, (WIDTH, HEIGHT), True)
+            scale_to(branches.all_branches(), surface_size, (WIDTH, HEIGHT), True)
 
         else:
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), pygame.FULLSCREEN)
             scale_to(SCALABLE, surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
+            scale_to(branches.all_branches(), surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
 
         change_fullscreen()
         bee_anim.set_screen(screen)
@@ -54,10 +58,13 @@ def on_key_down():
 
 
 def update():
-    global bee_anim, hit, hit_time
+    global bee_anim, hit, hit_time, branches
     if not bee_anim:
         bee_anim = BeeAnimation(screen)
         bee_anim.animate_bee()
+
+    if not branches:
+        branches = BranchProvider(screen)
 
     screen_width = screen.surface.get_size()[0]
     for i, cloud in enumerate(clouds):
@@ -87,5 +94,7 @@ def draw():
     for cloud in clouds:
         cloud.draw()
 
+    for branch in branches.branches_to_draw():
+        branch.draw()
 
 pgzrun.go()

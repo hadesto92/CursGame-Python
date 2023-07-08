@@ -56,6 +56,9 @@ def on_key_down():
         lumberjack_ready.x += 3.44 * trunk.width
         lumberjack_hit.x += 2 * trunk.width
 
+    if keyboard.LEFT or keyboard.RIGHT:
+        branches.hit()
+
 
 def update():
     global bee_anim, hit, hit_time, branches

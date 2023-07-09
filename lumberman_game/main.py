@@ -26,13 +26,13 @@ def on_key_down():
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
             scale_to(SCALABLE, surface_size, (WIDTH, HEIGHT), True)
-            branches.scale_branch(surface_size, (WIDTH, HEIGHT), True)
+            scale_to(branches.all_branches(), surface_size, (WIDTH, HEIGHT), True)
 
         else:
             surface_size = screen.surface.get_size()
             screen.surface = pygame.display.set_mode((FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), pygame.FULLSCREEN)
             scale_to(SCALABLE, surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
-            branches.scale_branch(surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
+            scale_to(branches.all_branches(), surface_size, (FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT), True)
 
 
         change_fullscreen()
@@ -43,6 +43,7 @@ def on_key_down():
         hit = True
         hit_time = time.time()
         branches.hit_tree()
+        branches.colision_branch(lumberjack_on_left)
 
     if keyboard.LEFT and not lumberjack_on_left:
         mirror_flip(lumberjack_ready, True, False)
@@ -67,7 +68,6 @@ def update():
 
     if not branches:
         branches = BranchProvider(screen)
-        branches.scale_branch((BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
 
     screen_width = screen.surface.get_size()[0]
     for i, cloud in enumerate(clouds):

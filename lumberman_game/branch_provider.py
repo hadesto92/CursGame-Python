@@ -7,98 +7,99 @@ from utilis import scale, scale_to
 class BranchProvider:
     def __init__(self, screen):
         self.screen = screen
-        self.screen_width = self.screen.surface.get_size()[0]
         self.screen_height = self.screen.surface.get_size()[1]
-        self.top = 0
+        self.branch_count = 10
+        self.left_branch = [self.create_branch() for _ in range(self.branch_count)]
+        self.right_branch = [self.create_branch(False) for _ in range(self.branch_count)]
+        scale_to(self.all_branches(), (BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
         self.tree = []
-        self.create_tree(30)
+        self.last_taken_left = 0
+        self.last_taken_right = 0
+        self.create_tree()
 
-    def scale_branch(self, BASE, Out, bood_scale=False):
-        for branch in self.tree:
-            if branch is None:
-                continue
-            else:
-                scale(branch[0], BASE, Out, bood_scale)
-
-    def create_place_branch_on_tree(self, branch):
+    def new_place(self):
         self.screen_height = self.screen.surface.get_size()[1]
-
         start_point = (33 / 60) * self.screen_height
         up = (15 / 60) * self.screen_height
+        return start_point - len(self.tree) * up
 
-        self.top = start_point - len(self.tree) * up
-
-        branch.y = self.top
-
-    def create_branch(self, first=True):
-        rand = random.randint(0,5)
-
+    def create_branch(self, left=True):
         branch_scale_left = 369 / 800
         branch_scale_right = 432 / 800
 
         branch_left_unused = Actor('konar_lewy')
 
-        if rand == 0 or rand == 3:
-            branch = Actor('konar_lewy', pos=(branch_scale_left*WIDTH, -100), anchor=(branch_left_unused.width, 0)), 'left'
-            self.create_place_branch_on_tree(branch[0])
-        elif rand == 1 or rand == 4:
-            branch = Actor('konar_prawy', pos=(branch_scale_right*WIDTH, -100), anchor=(0, 0)), 'left'
-            self.create_place_branch_on_tree(branch[0])
+        if left:
+            branch = Actor('konar_lewy', pos=(branch_scale_left*WIDTH, -100), anchor=(branch_left_unused.width, 0))
         else:
-            branch = None
+            branch = Actor('konar_prawy', pos=(branch_scale_right*WIDTH, -100), anchor=(0, 0))
 
         return branch
 
-    def create_tree(self, number_branch):
-        for _ in range(0, number_branch):
-            self.tree.append(self.create_branch())
+    def all_branches(self):
+        return self.left_branch + self.right_branch
 
+    def create_tree(self):
+        for _ in range(self.branch_count):
+            rand = random.randint(0, 5)
+            if rand == 0 or rand == 3:
+                self.tree.append((self.left_branch[self.last_taken_left], 'left'))
+                self.last_taken_left += 1
+            elif rand == 1 or rand == 4:
+                self.tree.append((self.right_branch[self.last_taken_right], 'right'))
+                self.last_taken_right += 1
+            else:
+                self.tree.append(None)
+
+        start_point = (33 / 60) * self.screen_height
+        up = (15/60) * self.screen_height
+
+        for i, branch in enumerate(self.tree):
+            self.top = start_point - i * up
+            if branch is None:
+                continue
+            else:
+                branch[0].y = self.top
 
     def draw_branch(self):
         branches = []
-
         for branch in self.tree:
-            if branch is None:
-                continue
-            else:
+            if branch is not None:
                 branches.append(branch[0])
-
         return branches
 
-    def find_pos_branch(self, direction):
+    def add_new_branch(self):
+        rand = random.randint(1, 4)
+        if rand == 0 or rand == 2:
+            if self.last_taken_left == self.branch_count:
+                self.last_taken_left = 0
+            self.left_branch[self.last_taken_left].y = self.new_place()
+            self.tree.append((self.left_branch[self.last_taken_left], 'left'))
+            self.last_taken_left += 1
+        elif rand == 1 or rand == 3:
+            if self.last_taken_right == self.branch_count:
+                self.last_taken_right = 0
+            self.right_branch[self.last_taken_right].y = self.new_place()
+            self.tree.append((self.right_branch[self.last_taken_right], 'right'))
+            self.last_taken_right += 1
+        else:
+            self.tree.append(None)
+
+    def colision_branch(self, lumberjack_direction):
+        self.screen_height = self.screen.surface.get_size()[1]
+        print(lumberjack_direction)
         for branch in self.tree:
-            if branch is None:
-                continue
-            else:
-                if direction == 'left' and branch[1] == direction:
-                    return branch[0].pos
-                elif direction == 'right' and branch[1] == direction:
-                    return branch[0].pos
-
-    def find_anchor_branch(self, direction):
-        for branch in self.tree:
-            if branch is None:
-                continue
-            else:
-                if direction == 'left' and branch[1] == direction:
-                    return branch[0].anchor
-                elif direction == 'right' and branch[1] == direction:
-                    return branch[0].anchor
-
-
+            if branch is not None:
+                if branch[0].y + (15 / 60) * self.screen_height >= lumberjack_ready.pos[1] - lumberjack_ready.height and lumberjack_direction == 'True' and branch[1] == 'left':
+                    print("Kolizja")
+                elif branch[0].y + (15 / 60) * self.screen_height >= lumberjack_ready.pos[1] - lumberjack_ready.height and lumberjack_direction == 'False' and branch[1] == 'right':
+                    print("Kolizja")
 
     def hit_tree(self):
         self.screen_height = self.screen.surface.get_size()[1]
-        flage = 0
-        print('..........................................................................................')
+        self.add_new_branch()
         for branch in self.tree:
             if branch is not None:
-                if branch[0].y+((15/60)*self.screen_height) > lumberjack_ready.pos[1]-lumberjack_ready.height:
-                    print('True')
-                    print('Branch y [', flage, '] = ', branch[0].y + ((15 / 60) * self.screen_height),', lumberjack y: ', lumberjack_ready.pos[1]-lumberjack_ready.height)
-                    #self.check_branch_end(branch, flage)
-                else:
-                    print('False')
-                    print('Branch y [', flage, '] = ', branch[0].y + ((15 / 60) * self.screen_height),', lumberjack y: ', lumberjack_ready.pos[1]-lumberjack_ready.height)
-                    branch[0].y += (15/60) * self.screen_height
-            flage+=1
+                branch[0].y += (15 / 60) * self.screen_height
+        self.tree.pop(0)
+

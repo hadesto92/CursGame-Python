@@ -2,7 +2,7 @@ import random
 
 from static import HEIGHT, WIDTH, BASE_HEIGHT, BASE_WIDTH, lumberjack_ready
 from pgzero.builtins import Actor
-from utilis import scale, scale_to
+from utilis import scale_to
 
 class BranchProvider:
     def __init__(self, screen):
@@ -11,7 +11,7 @@ class BranchProvider:
         self.branch_count = 10
         self.left_branch = [self.create_branch() for _ in range(self.branch_count)]
         self.right_branch = [self.create_branch(False) for _ in range(self.branch_count)]
-        scale_to(self.all_branches(), (BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
+        scale_to(self.left_branch + self.right_branch, (BASE_WIDTH, BASE_HEIGHT), (WIDTH, HEIGHT))
         self.tree = []
         self.last_taken_left = 0
         self.last_taken_right = 0
@@ -36,20 +36,28 @@ class BranchProvider:
 
         return branch
 
-    def all_branches(self):
-        return self.left_branch + self.right_branch
+    def add_new_branch(self, first=False):
+        rand = random.randint(0, 5)
+        if rand == 0 or rand == 2:
+            if first == False:
+                if self.last_taken_left == self.branch_count:
+                    self.last_taken_left = 0
+                self.left_branch[self.last_taken_left].y = self.new_place()
+            self.tree.append((self.left_branch[self.last_taken_left], 'left'))
+            self.last_taken_left += 1
+        elif rand == 1 or rand == 3:
+            if first == False:
+                if self.last_taken_right == self.branch_count:
+                    self.last_taken_right = 0
+                self.right_branch[self.last_taken_right].y = self.new_place()
+            self.tree.append((self.right_branch[self.last_taken_right], 'right'))
+            self.last_taken_right += 1
+        else:
+            self.tree.append(None)
 
     def create_tree(self):
         for _ in range(self.branch_count):
-            rand = random.randint(0, 5)
-            if rand == 0 or rand == 3:
-                self.tree.append((self.left_branch[self.last_taken_left], 'left'))
-                self.last_taken_left += 1
-            elif rand == 1 or rand == 4:
-                self.tree.append((self.right_branch[self.last_taken_right], 'right'))
-                self.last_taken_right += 1
-            else:
-                self.tree.append(None)
+            self.add_new_branch(True)
 
         start_point = (33 / 60) * self.screen_height
         up = (15/60) * self.screen_height
@@ -68,32 +76,16 @@ class BranchProvider:
                 branches.append(branch[0])
         return branches
 
-    def add_new_branch(self):
-        rand = random.randint(1, 4)
-        if rand == 0 or rand == 2:
-            if self.last_taken_left == self.branch_count:
-                self.last_taken_left = 0
-            self.left_branch[self.last_taken_left].y = self.new_place()
-            self.tree.append((self.left_branch[self.last_taken_left], 'left'))
-            self.last_taken_left += 1
-        elif rand == 1 or rand == 3:
-            if self.last_taken_right == self.branch_count:
-                self.last_taken_right = 0
-            self.right_branch[self.last_taken_right].y = self.new_place()
-            self.tree.append((self.right_branch[self.last_taken_right], 'right'))
-            self.last_taken_right += 1
-        else:
-            self.tree.append(None)
+    def collision_branch(self, lumberjack_direction):
+        if self.tree[0] is not None:
+            if self.tree[0][1] == 'left' and lumberjack_direction == True:
+                return True
+            elif self.tree[0][1] == 'right' and lumberjack_direction == False:
+                return True
+            else:
+                return False
+        return False
 
-    def colision_branch(self, lumberjack_direction):
-        self.screen_height = self.screen.surface.get_size()[1]
-        print(lumberjack_direction)
-        for branch in self.tree:
-            if branch is not None:
-                if branch[0].y + (15 / 60) * self.screen_height >= lumberjack_ready.pos[1] - lumberjack_ready.height and lumberjack_direction == 'True' and branch[1] == 'left':
-                    print("Kolizja")
-                elif branch[0].y + (15 / 60) * self.screen_height >= lumberjack_ready.pos[1] - lumberjack_ready.height and lumberjack_direction == 'False' and branch[1] == 'right':
-                    print("Kolizja")
 
     def hit_tree(self):
         self.screen_height = self.screen.surface.get_size()[1]

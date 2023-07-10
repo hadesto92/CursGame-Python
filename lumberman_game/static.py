@@ -2,7 +2,7 @@ import pgzrun
 import pygame
 import random
 from screeninfo import get_monitors
-from pgzero.builtins import Actor, keyboard
+from pgzero.builtins import Actor, keyboard, Rect
 from pgzero.screen import Screen
 screen: Screen
 
@@ -49,15 +49,19 @@ lumberjack_ready = Actor('drwal_01', pos=(trunk.x-175, trunk_base.y+(trunk_base.
 lumberjack_hit_temp = Actor('drwal_02')
 lumberjack_hit = Actor('drwal_02', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
 
+gravestone = Actor('rip', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
+
 #print(trunk.x, trunk.y, trunk.height)
 #print(trunk_base.x, trunk_base.y, trunk_base.height)
 #print(lumberjack_ready.x, lumberjack_ready.y, lumberjack_ready.height)
 
 #Deklaracja obiektów do skalowania
-SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood] + clouds
+SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood, gravestone] + clouds
 
 #Deklaracja kolorów:
 BLACK = 0, 0, 0
+ORANGE = 255, 125, 0
+RED = 255, 0, 0
 
 #Fizyka poruszania się chmurek
 cloud_speed = [random.uniform(0.05, 0.5) for _ in range(4)]

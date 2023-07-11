@@ -52,3 +52,7 @@ def mirror_flip(self, flip_x, flip_y):
     if flip_y:
         self._fliped_y = not self._fliped_y
     self._surf = pygame.transform.flip(self._surf, flip_x, flip_y)
+
+def bring_back_position(new_position, old_position):
+    new_position.x = old_position.x
+    new_position.y = old_position.y

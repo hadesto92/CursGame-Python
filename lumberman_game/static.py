@@ -2,7 +2,7 @@ import pgzrun
 import pygame
 import random
 from screeninfo import get_monitors
-from pgzero.builtins import Actor, keyboard, Rect
+from pgzero.builtins import Actor, keyboard, Rect, animate, sounds
 from pgzero.screen import Screen
 screen: Screen
 
@@ -45,9 +45,11 @@ wood = Actor('pien_caly', pos=(trunk.x+1.5, trunk.height*HEIGHT_multipler+74), a
 
 lumberjack_ready_temp = Actor('drwal_01')
 lumberjack_ready = Actor('drwal_01', pos=(trunk.x-175, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_ready_temp.height))
+lumberjack_ready_old = Actor('drwal_01', pos=(trunk.x-175, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_ready_temp.height))
 
 lumberjack_hit_temp = Actor('drwal_02')
 lumberjack_hit = Actor('drwal_02', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
+lumberjack_hit_old = Actor('drwal_02', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
 
 gravestone = Actor('rip', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
 
@@ -56,7 +58,7 @@ gravestone = Actor('rip', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-2
 #print(lumberjack_ready.x, lumberjack_ready.y, lumberjack_ready.height)
 
 #Deklaracja obiektów do skalowania
-SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood, gravestone] + clouds
+SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood, gravestone, lumberjack_ready_old, lumberjack_hit_old] + clouds
 
 #Deklaracja kolorów:
 BLACK = 0, 0, 0

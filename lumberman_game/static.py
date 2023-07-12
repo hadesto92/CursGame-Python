@@ -23,6 +23,10 @@ monitor = get_monitors()[0]
 FULLSCREEN_WIDTH = monitor.width
 FULLSCREEN_HEIGHT = monitor.height
 
+FULLSCREEN_WIDTH_multipler = WIDTH/FULLSCREEN_WIDTH
+FULLSCREEN_HEIGHT_multipler = HEIGHT/FULLSCREEN_HEIGHT
+
+
 #Deklaracja asetów
 backgraound = Actor('background.png', pos=(0, 0), anchor=(0, 0))
 

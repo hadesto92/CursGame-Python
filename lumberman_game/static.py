@@ -2,7 +2,7 @@ import pgzrun
 import pygame
 import random
 from screeninfo import get_monitors
-from pgzero.builtins import Actor, keyboard, Rect, animate, sounds
+from pgzero.builtins import Actor, keyboard, Rect, animate, sounds, music
 from pgzero.screen import Screen
 screen: Screen
 
@@ -53,12 +53,11 @@ lumberjack_hit_old = Actor('drwal_02', pos=(trunk.x-160, trunk_base.y+(trunk_bas
 
 gravestone = Actor('rip', pos=(trunk.x-160, trunk_base.y+(trunk_base.height/2)-20), anchor=(0, lumberjack_hit_temp.height))
 
-#print(trunk.x, trunk.y, trunk.height)
-#print(trunk_base.x, trunk_base.y, trunk_base.height)
-#print(lumberjack_ready.x, lumberjack_ready.y, lumberjack_ready.height)
+stop_music_temp = Actor('music_disabled')
+stop_music_img = Actor('music_disabled', pos=(WIDTH-40, 10), anchor=(0,0))
 
 #Deklaracja obiektów do skalowania
-SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood, gravestone, lumberjack_ready_old, lumberjack_hit_old] + clouds
+SCALABLE = [backgraound, bee, trunk, trunk_base, trunk_slice, lumberjack_ready, lumberjack_hit, trunk_slice_old, wood, gravestone, lumberjack_ready_old, lumberjack_hit_old, stop_music_img] + clouds
 
 #Deklaracja kolorów:
 BLACK = 0, 0, 0

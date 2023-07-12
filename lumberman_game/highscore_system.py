@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 
 from unidecode import unidecode
 from static import sounds
@@ -109,39 +110,35 @@ def decryption_cesar(word):
 #Pobranie informacji z pliku i zwraca zawartośc w formie tablicy każda linika pliku to odzielna wartość tablicy
 def file_open():
     #print('file open')
-    if os.path.isfile('all_score'):
-        file_temp = open("all_score", "r")
-        content = file_temp.read()
-        content_temp = content.split("\n")
+    #file = os.path.join(os.path.dirname(sys.executable), 'all_score')
+    file_temp = open('all_score', "r")
+    content = file_temp.read()
+    content_temp = content.split("\n")
 
-        data = []
-        for line in content_temp:
-            if line == '':
-                break
-            sign_temp = ''
-            temp_data = []
-            for sign in line:
-                if(sign != ' '):
-                    sign_temp+=sign
-                else:
-                    temp_data.append(sign_temp)
-                    sign_temp=''
-            temp_data.append(sign_temp)
-            data.append(temp_data)
+    data = []
+    for line in content_temp:
+        if line == '':
+            break
+        sign_temp = ''
+        temp_data = []
+        for sign in line:
+            if(sign != ' '):
+                sign_temp+=sign
+            else:
+                temp_data.append(sign_temp)
+                sign_temp=''
+        temp_data.append(sign_temp)
+        data.append(temp_data)
 
-        file_temp.close()
-
-    else:
-        file_temp = open("all_score", "a")
-        data = []
-        file_temp.close()
+    file_temp.close()
 
     return data
 
 #Zapisanie informacji do pliku
 def save_file(data):
     #print('file save')
-    file_temp = open("all_score", "a")
+    #file = os.path.join(os.path.dirname(sys.executable), 'all_score')
+    file_temp = open('all_score', "a")
     file_temp.write(data)
     file_temp.close()
 

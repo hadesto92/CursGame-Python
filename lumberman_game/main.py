@@ -162,7 +162,8 @@ def on_key_down():
                 elif play and not game_over:
                     reset()
                 else:
-                    quit()
+                    pygame.quit()
+                    sys.exit()
 
             if keyboard.M:
                 if stop_music:
@@ -430,13 +431,19 @@ def option_menu():
             screen.draw.text("<- - UDERZENIE Z LEWEJ", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, (screen.surface.get_size()[1]/2)-100), align="left", fontname="bungee-regular", fontsize=64)
             screen.draw.text("-> - UDERZENIE Z PRAWEJ", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, screen.surface.get_size()[1]/2), align="left", fontname="bungee-regular", fontsize=64)
             screen.draw.text("F - PEŁNY EKRAN", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1]/2)+100), align="left", fontname="bungee-regular", fontsize=64)
-            screen.draw.text("ESC - WYJŚCIE Z GRY/POWRÓT", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1]/2)+200), align="left", fontname="bungee-regular", fontsize=64)
+            screen.draw.text("M - WYCISZ DŹWIĘKI", color=ORANGE, shadow=(1, 1),
+                             center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1] / 2) + 200),
+                             align="left", fontname="bungee-regular", fontsize=64)
+            screen.draw.text("ESC - WYJŚCIE Z GRY/POWRÓT", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1]/2)+300), align="left", fontname="bungee-regular", fontsize=64)
         else:
             screen.draw.text("OPCJE", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1] / 2) - 150), align="left", fontname="bungee-regular", fontsize=64)
             screen.draw.text("<- - UDERZENIE Z LEWEJ", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, (screen.surface.get_size()[1]/2)-50), align="left", fontname="bungee-regular", fontsize=32)
             screen.draw.text("-> - UDERZENIE Z PRAWEJ", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, screen.surface.get_size()[1]/2), align="left", fontname="bungee-regular", fontsize=32)
-            screen.draw.text("-> - UDERZENIE Z PRAWEJ", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1]/2+50)), align="left", fontname="bungee-regular", fontsize=32)
-            screen.draw.text("ESC - WYJŚCIE Z GRY/POWRÓT", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, (screen.surface.get_size()[1]/2)+100), align="left", fontname="bungee-regular", fontsize=32)
+            screen.draw.text("F - PEŁNY EKRAN", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1]/2+50)), align="left", fontname="bungee-regular", fontsize=32)
+            screen.draw.text("M - WYCISZ DŹWIĘKI", color=ORANGE, shadow=(1, 1),
+                             center=(screen.surface.get_size()[0] / 2, (screen.surface.get_size()[1] / 2 + 100)),
+                             align="left", fontname="bungee-regular", fontsize=32)
+            screen.draw.text("ESC - WYJŚCIE Z GRY/POWRÓT", color=ORANGE, shadow=(1, 1), center=(screen.surface.get_size()[0]/2, (screen.surface.get_size()[1]/2)+150), align="left", fontname="bungee-regular", fontsize=32)
 
 def high_score():
     if highscore:

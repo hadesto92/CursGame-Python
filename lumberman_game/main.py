@@ -137,7 +137,7 @@ def on_key_down():
             bee_anim.reset_animation()
 
         if not save_score:
-            if keyboard.RETURN:
+            if keyboard.RETURN and not key_bind and not info and not highscore:
                 print(pygame.KEYDOWN)
                 if not stop_music:
                     sounds.start.set_volume(0.5)
@@ -206,7 +206,7 @@ def on_key_down():
                     if keyboard.Z:
                         save_score = True
             else:
-                if keyboard.O:
+                if keyboard.O and not info and not highscore:
                     if not key_bind:
                         key_bind = True
                         start = False
@@ -214,7 +214,7 @@ def on_key_down():
                         key_bind = False
                         start = True
 
-                if keyboard.I:
+                if keyboard.I and not key_bind and not highscore:
                     if not info:
                         info = True
                         start = False
@@ -222,7 +222,7 @@ def on_key_down():
                         info = False
                         start = True
 
-                if keyboard.H:
+                if keyboard.H and not key_bind and not info:
                     if not highscore:
                         highscore = True
                         start = False

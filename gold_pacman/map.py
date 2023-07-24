@@ -31,7 +31,7 @@ def get_possible_directions(ghost):
         bw = 20
     directions = [0, 0, 0, 0]   #right, up, left, down
     if ghost.x - bw < 0:
-        ghost.x = 576
+        ghost.x = 585
     elif ghost.x + bw > 600:
         ghost.x = bw
 
@@ -39,12 +39,12 @@ def get_possible_directions(ghost):
     dpx = ghost.x + move_x
     dpy = ghost.y + move_y
 
-    if moveimage.get_at((int(dpx+bw), int(dpy-60))) != Color('black'):
+    if moveimage.get_at((int(dpx+bw), int(dpy-60))) == Color('black'):
         directions[0] = 1
-    elif moveimage.get_at((int(dpx), int(dpy-60-bw))) != Color('black'):
+    if moveimage.get_at((int(dpx), int(dpy-60-bw))) == Color('black'):
         directions[1] = 1
-    elif moveimage.get_at((int(dpx-bw), int(dpy-60))) != Color('black'):
+    if moveimage.get_at((int(dpx-bw), int(dpy-60))) == Color('black'):
         directions[2] = 1
-    elif moveimage.get_at((int(dpx), int(dpy-60+bw))) != Color('black'):
+    if moveimage.get_at((int(dpx), int(dpy-60+bw))) == Color('black'):
         directions[3] = 1
     return directions

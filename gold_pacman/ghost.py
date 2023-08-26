@@ -1,4 +1,4 @@
-from pgzero.builtins import Actor, animate
+from pgzero.builtins import Actor, animate, Rect
 from random import randint
 from math import sqrt
 from map import get_possible_directions, get_distans, get_possible_directions_near_pacman, serch_direction
@@ -6,12 +6,13 @@ from time import time
 
 class Ghost:
     def __init__(self):
-        self.ghosts = [Actor(f'ghost{i}', pos=(250+(i*18), 360)) for i in range(1,2)]
+        self.ghosts = [Actor(f'ghost{i}', pos=(250+(i*18), 360)) for i in range(1,5)]
         for ghost in self.ghosts:
             ghost.dir = 1
             ghost.last_dir = -100
             ghost.status = 0
             ghost.in_center = True
+            ghost.start_pos = ghost.pos
             ghost.decide_point = 0, 7
             ghost.point = 16
             ghost.ghost_moves= (ghost.point, 0), (0, -ghost.point), (-ghost.point, 0), (0, ghost.point)
@@ -20,10 +21,12 @@ class Ghost:
             ghost.new_point = ghost.x, ghost.y
             ghost.move = False
             ghost.run_pacman = False
+            ghost.current_animation = None
         self.disable_ghost_image = 'ghost5'
         self.enable = True
         self.disable_time = 0
         self.ghost_speed = 150
+        self.disable_max_time = 15
 
     def disable_ghost(self):
         self.enable = False
@@ -35,7 +38,7 @@ class Ghost:
         self.enable = True
         self.disable_time = 0
         for i, ghost in enumerate(self.ghosts):
-            ghost.image = f'ghost{i}'
+            ghost.image = f'ghost{i+1}'
 
     def ghost_in_center(self, ghost):
         if ghost.in_center:
@@ -57,6 +60,17 @@ class Ghost:
             ghost.draw()
 
     def update(self, pacman_pos):
+        if not self.enable:
+            left = self.disable_max_time - (time() - self.disable_time)
+            if 0 < left < 2:
+                if str(left)[:3][-1] in ['1', '3', '5', '7', '9']:
+                    for i, ghost in enumerate(self.ghosts):
+                        ghost.image = f'ghost{i+1}'
+                else:
+                    for ghost in self.ghosts:
+                        ghost.image = self.disable_ghost_image
+            elif left < 0:
+                self.enable_ghost()
         self.move_ghost(pacman_pos)
 
     def is_move(self, ghost):
@@ -74,12 +88,12 @@ class Ghost:
                 ghost.move = True
                 if self.ghost_in_center(ghost):
                     ghost.new_point = 300, 360
-                    animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
+                    ghost.current_animation = animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
                     ghost.new_point_index = 29
                 else:
                     if self.check_pacman_pos(ghost, pacman_pos) < 122:
                         if self.check_pacman_pos(ghost, pacman_pos) < 50:
-                            animate(ghost, pos=pacman_pos, duration=1/3, tween='linear')
+                            ghost.current_animation = animate(ghost, pos=pacman_pos, duration=1/3, tween='linear')
                             ghost.run_pacman = True
                             ghost.move = False
                             continue
@@ -89,7 +103,7 @@ class Ghost:
                                 ghost.new_point = direction[1]
                                 ghost.last_point_index = ghost.new_point_index
                                 ghost.new_point_index = direction[0]
-                                animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
+                                ghost.current_animation = animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
                                 ghost.run_pacman = False
                                 ghost.move = False
                                 continue
@@ -113,7 +127,18 @@ class Ghost:
                     speed = get_distans(ghost)/self.ghost_speed
                     if speed == 0:
                         speed = 1/10
-                    animate(ghost, pos=ghost.new_point, duration=speed, tween='linear')
+                    ghost.current_animation = animate(ghost, pos=ghost.new_point, duration=speed, tween='linear')
             else:
                 if not self.is_move(ghost):
                     ghost.move = False
+
+    def check_collision(self, pacman):
+        x, y, width, height = pacman.x, pacman.y, pacman.width, pacman.height
+        rect = Rect(x - width / 2, y - height / 2, width, height)
+        for ghost in self.ghosts:
+            if ghost.colliderect(rect):
+                if self.enable:
+                    return "pacman_busted", "None"
+                else:
+                    return "ghost_busted", ghost
+        return "None", "None"

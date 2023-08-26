@@ -16,6 +16,7 @@ class Pacman:
         self.animation_time = 0.1
         self.animation = False
         self.dt = None
+        self.start_pos = self.pacman.x, self.pacman.y
 
     def on_key_down(self, key):
         if key == self.keys.RIGHT:

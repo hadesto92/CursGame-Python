@@ -5,8 +5,9 @@ from random import randint
 from math import sqrt
 
 moveimage = image.load('images/move_map.png')
+dotimage = image.load('images/dot_map.png')
 
-#(x,y),(index to move)
+#(x,y),(index to move) -> miejsca na mapie do których duszki mogą się przenieś
 map_point=[((35,100),(1,6)),
            ((130,100),(0,2,7)),
            ((270,100),(1,9)),
@@ -66,6 +67,7 @@ map_point=[((35,100),(1,6)),
            ((0, 360),(27)),
            ((580,360),(31))]
 
+#Poroszanie pacmana
 def check_move_point(pacman):
     move_x, move_y = 0, 0
 
@@ -89,6 +91,7 @@ def check_move_point(pacman):
         return False
     return True
 
+#Poruszanie duszków
 def get_possible_directions(ghost):
 
     last_index  = ghost.new_point_index
@@ -185,3 +188,14 @@ def get_distans(ghost):
 
 #print(new_position[0])
 #print(new_position[1])
+
+#Wstawianie monet
+def check_dot_point(x, y):
+    point = int(x), int(y)
+
+    if dotimage.get_at(point) == Color('blue'):
+        return 1
+    elif dotimage.get_at(point) == Color('green'):
+        return 2
+    else:
+        return 0

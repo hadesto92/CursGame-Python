@@ -2,6 +2,7 @@ import random
 
 from pygame import image, Color
 from random import randint
+from math import sqrt
 
 moveimage = image.load('images/move_map.png')
 
@@ -69,13 +70,13 @@ def check_move_point(pacman):
     move_x, move_y = 0, 0
 
     if pacman.keys_active['right']:
-        move_x = 5
+        move_x = 3
     elif pacman.keys_active['left']:
-        move_x = -5
+        move_x = -3
     elif pacman.keys_active['up']:
-        move_y = -5
+        move_y = -3
     elif pacman.keys_active['down']:
-        move_y = 5
+        move_y = 3
 
     if pacman.x+move_x < 0:
         pacman.x = 585
@@ -114,6 +115,58 @@ def get_possible_directions(ghost):
 
     return index_move, map_point[index_move][0]
 
+def get_possible_directions_near_pacman(ghost, pacman_pos):
+
+    last_index  = ghost.new_point_index
+
+    #print("Last index: ", last_index)
+
+    index_move = -1
+
+    if last_index == 29:
+        index_move = 24
+        #print("Index move: ", 24)
+    elif last_index == 56:
+        ghost.x = 580
+        ghost.y = 360
+        index_move = 31
+        #print("Index move: ", 31)
+    elif last_index == 57:
+        ghost.x = 0
+        ghost.y = 360
+        index_move = 27
+        #print("Index move: ", 57)
+    else:
+        for i, index in enumerate(map_point):
+            if last_index == i:
+                distance_checer = 150
+                for i in range(0, len(index[1])):
+                    distance = sqrt(pow(map_point[index[1][i]][0][0] - pacman_pos[0], 2) + pow(map_point[index[1][i]][0][1] - pacman_pos[1], 2))
+                    if int(distance) < distance_checer:
+                        index_move = index[1][i]
+                        distance_checer = int(distance)
+        #print("Index move: ", index_move)
+
+    if index_move == -1:
+        direction = get_possible_directions(ghost)
+        index_move = direction[0]
+
+    return index_move, map_point[index_move][0]
+
+def serch_direction(ghost):
+
+    index_move = -1
+    distance_serach = 1500
+    for i, index in enumerate(map_point):
+        distance = sqrt(pow(map_point[i][0][0] - ghost[0], 2) + pow(map_point[i][0][1] - ghost[1], 2))
+        if int(distance) < distance_serach:
+            index_move = i
+            distance_serach = int(distance)
+
+    print(index_move)
+
+    return index_move, map_point[index_move][0]
+
 def get_distans(ghost):
     distans = 0
 
@@ -124,9 +177,9 @@ def get_distans(ghost):
     new_point_y = map_point[ghost.new_point_index][0][1]
 
     if abs(last_point_x-new_point_x)>0:
-        return abs(last_point_x-new_point_x)
+        return int(abs(last_point_x-new_point_x))
     else:
-        return abs(last_point_y - new_point_y)
+        return int(abs(last_point_y - new_point_y))
 
 #new_position = get_possible_directions()
 

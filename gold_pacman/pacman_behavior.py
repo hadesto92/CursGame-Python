@@ -52,7 +52,7 @@ class Pacman:
     def update(self):
         move_pressed = self.move_pressed()
 
-        print(self.pacman.x, self.pacman.y)
+        #print(self.pacman.x, self.pacman.y)
 
         if not move_pressed:
             return
@@ -75,18 +75,18 @@ class Pacman:
         flipped_pacman_image = "pacman_cr" if self.animation else "pacman_or"
 
         if self.pacman.keys_active['right']:
-            self.pacman.x += 5
+            self.pacman.x += 3
             self.pacman.image = straight_pacman_image
             self.pacman.angle = 0
         elif self.pacman.keys_active['left']:
-            self.pacman.x -= 5
+            self.pacman.x -= 3
             self.pacman.image = flipped_pacman_image
             self.pacman.angle = 180
         elif self.pacman.keys_active['up']:
-            self.pacman.y -= 5
+            self.pacman.y -= 3
             self.pacman.image = straight_pacman_image
             self.pacman.angle = 90
         elif self.pacman.keys_active['down']:
-            self.pacman.y += 5
+            self.pacman.y += 3
             self.pacman.image = flipped_pacman_image
             self.pacman.angle = 270

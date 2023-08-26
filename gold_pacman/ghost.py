@@ -1,11 +1,12 @@
 from pgzero.builtins import Actor, animate
 from random import randint
-from map import get_possible_directions, get_distans
+from math import sqrt
+from map import get_possible_directions, get_distans, get_possible_directions_near_pacman, serch_direction
 from time import time
 
 class Ghost:
     def __init__(self):
-        self.ghosts = [Actor(f'ghost{i}', pos=(250+(i*18), 360)) for i in range(1,5)]
+        self.ghosts = [Actor(f'ghost{i}', pos=(250+(i*18), 360)) for i in range(1,2)]
         for ghost in self.ghosts:
             ghost.dir = 1
             ghost.last_dir = -100
@@ -18,10 +19,11 @@ class Ghost:
             ghost.new_point_index = 0
             ghost.new_point = ghost.x, ghost.y
             ghost.move = False
+            ghost.run_pacman = False
         self.disable_ghost_image = 'ghost5'
         self.enable = True
         self.disable_time = 0
-        self.ghost_speed = 100
+        self.ghost_speed = 150
 
     def disable_ghost(self):
         self.enable = False
@@ -54,33 +56,64 @@ class Ghost:
         for ghost in self.ghosts:
             ghost.draw()
 
-    def update(self):
-        self.move_ghost()
+    def update(self, pacman_pos):
+        self.move_ghost(pacman_pos)
 
     def is_move(self, ghost):
         if ghost.x == ghost.new_point[0] and ghost.y == ghost.new_point[1]:
             return False
         return True
 
-    def move_ghost(self):
+    def check_pacman_pos(self, ghost, pacman_pos):
+        distance = sqrt(pow(ghost.x - pacman_pos[0], 2) + pow(ghost.y - pacman_pos[1], 2))
+        return distance
+
+    def move_ghost(self, pacman_pos):
         for ghost in self.ghosts:
             if ghost.move == False:
                 ghost.move = True
                 if self.ghost_in_center(ghost):
                     ghost.new_point = 300, 360
-                    animate(ghost, pos=ghost.new_point, duration=1, tween='linear')
+                    animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
                     ghost.new_point_index = 29
                 else:
-                    direction = get_possible_directions(ghost)
+                    if self.check_pacman_pos(ghost, pacman_pos) < 122:
+                        if self.check_pacman_pos(ghost, pacman_pos) < 50:
+                            animate(ghost, pos=pacman_pos, duration=1/3, tween='linear')
+                            ghost.run_pacman = True
+                            ghost.move = False
+                            continue
+                        else:
+                            if ghost.run_pacman == True:
+                                direction = serch_direction(pacman_pos)
+                                ghost.new_point = direction[1]
+                                ghost.last_point_index = ghost.new_point_index
+                                ghost.new_point_index = direction[0]
+                                animate(ghost, pos=ghost.new_point, duration=1/10, tween='linear')
+                                ghost.run_pacman = False
+                                ghost.move = False
+                                continue
+                            else:
+                                if randint(1, 10) % 10 == 0:
+                                    direction = get_possible_directions(ghost)
+                                else:
+                                    direction = get_possible_directions_near_pacman(ghost, pacman_pos)
+                    else:
+                        direction = get_possible_directions(ghost)
+
+                    ghost.new_point = direction[1]
+
                     if ghost.new_point_index == 56:
                         ghost.last_point_index = 57
                     elif ghost.new_point_index == 57:
                         ghost.last_point_index = 56
                     else:
                         ghost.last_point_index = ghost.new_point_index
-                    ghost.new_point = direction[1]
                     ghost.new_point_index = direction[0]
-                    animate(ghost, pos=ghost.new_point, duration=get_distans(ghost)/self.ghost_speed, tween='linear')
+                    speed = get_distans(ghost)/self.ghost_speed
+                    if speed == 0:
+                        speed = 1/10
+                    animate(ghost, pos=ghost.new_point, duration=speed, tween='linear')
             else:
                 if not self.is_move(ghost):
                     ghost.move = False

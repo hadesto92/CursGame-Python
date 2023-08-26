@@ -37,6 +37,6 @@ def on_key_up(key):
 
 def update():
     pacman.update()
-    ghost.update()
+    ghost.update(pacman.pacman.pos)
 
 pgzrun.go()

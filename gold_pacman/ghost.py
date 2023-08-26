@@ -1,12 +1,7 @@
 from pgzero.builtins import Actor, animate
 from random import randint
-from map import get_possible_directions
+from map import get_possible_directions, get_distans
 from time import time
-
-ghost_should_move = 4
-def ghost_should_move_up():
-    global ghost_should_move
-    ghost_should_move += 1
 
 class Ghost:
     def __init__(self):
@@ -16,12 +11,17 @@ class Ghost:
             ghost.last_dir = -100
             ghost.status = 0
             ghost.in_center = True
-            ghost.decide_point = 0, 6
+            ghost.decide_point = 0, 7
+            ghost.point = 16
+            ghost.ghost_moves= (ghost.point, 0), (0, -ghost.point), (-ghost.point, 0), (0, ghost.point)
+            ghost.last_point_index = 0
+            ghost.new_point_index = 0
+            ghost.new_point = ghost.x, ghost.y
+            ghost.move = False
         self.disable_ghost_image = 'ghost5'
         self.enable = True
         self.disable_time = 0
-        self.ghost_moves= (16, 0), (0, -16), (-16, 0), (0, 16)
-        self.ghost_speed = 3
+        self.ghost_speed = 100
 
     def disable_ghost(self):
         self.enable = False
@@ -35,67 +35,52 @@ class Ghost:
         for i, ghost in enumerate(self.ghosts):
             ghost.image = f'ghost{i}'
 
-    def ghost_in_center(self):
-        for ghost in self.ghosts:
+    def ghost_in_center(self, ghost):
+        if ghost.in_center:
             if 231 < ghost.x < 370 and 257+60 < ghost.y < 337+60:
-                ghost.in_center = True
+                if ghost.x == 300 and ghost.y == 360:
+                    ghost.in_center = False
+                else:
+                    ghost.in_center = True
             else:
                 ghost.in_center = False
-            #print(ghost.in_center)
+        else:
+            ghost.in_center = False
+
+        return ghost.in_center
+        #print(ghost.in_center)
 
     def draw(self):
         for ghost in self.ghosts:
             ghost.draw()
 
     def update(self):
-        self.ghost_in_center()
         self.move_ghost()
 
-    def random_dir(self, last_dir, direction):
-
-        new_dir = 0
-
-        if direction.count(1) > 0:
-            if last_dir == 0:
-                new_dir = randint(0, 3)
-                while direction[new_dir] == 0 or new_dir == 2:
-                    new_dir = randint(0, 3)
-            if last_dir == 1:
-                new_dir = randint(0, 3)
-                while direction[new_dir] == 0 or new_dir == 3:
-                    new_dir = randint(0, 3)
-            if last_dir == 2:
-                new_dir = randint(0, 3)
-                while direction[new_dir] == 0 or new_dir == 0:
-                    new_dir = randint(0, 3)
-            if last_dir == 3:
-                new_dir = randint(0, 3)
-                while direction[new_dir] == 0 or new_dir == 1:
-                    new_dir = randint(0, 3)
-        else:
-            if last_dir == 0:
-                new_dir = 2
-            if last_dir == 1:
-                new_dir = 3
-            if last_dir == 2:
-                new_dir = 0
-            if last_dir == 3:
-                new_dir = 1
-
-        return new_dir
+    def is_move(self, ghost):
+        if ghost.x == ghost.new_point[0] and ghost.y == ghost.new_point[1]:
+            return False
+        return True
 
     def move_ghost(self):
-        global ghost_should_move
-        if ghost_should_move < 4:
-            return
-        ghost_shoyld_move = 0
         for ghost in self.ghosts:
-            direction = get_possible_directions(ghost)
-            if ghost.in_center and direction[1]:
-                ghost.dir = 1
+            if ghost.move == False:
+                ghost.move = True
+                if self.ghost_in_center(ghost):
+                    ghost.new_point = 300, 360
+                    animate(ghost, pos=ghost.new_point, duration=1, tween='linear')
+                    ghost.new_point_index = 29
+                else:
+                    direction = get_possible_directions(ghost)
+                    if ghost.new_point_index == 56:
+                        ghost.last_point_index = 57
+                    elif ghost.new_point_index == 57:
+                        ghost.last_point_index = 56
+                    else:
+                        ghost.last_point_index = ghost.new_point_index
+                    ghost.new_point = direction[1]
+                    ghost.new_point_index = direction[0]
+                    animate(ghost, pos=ghost.new_point, duration=get_distans(ghost)/self.ghost_speed, tween='linear')
             else:
-                ghost.dir = self.random_dir(ghost.last_dir, direction)
-            #while direction[ghost.dir] == 0 or (abs(ghost.last_dir - ghost.dir) == 2 and direction.count(1) > 1):
-                #ghost.dir = self.random_dir(ghost.last_dir, direction)
-            animate(ghost, pos=(ghost.x+self.ghost_moves[ghost.dir][0], ghost.y+self.ghost_moves[ghost.dir][1]), duration=1/self.ghost_speed, tween='linear', on_finished=ghost_should_move_up)
-            ghost.last_dir = ghost.dir
+                if not self.is_move(ghost):
+                    ghost.move = False

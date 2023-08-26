@@ -52,6 +52,8 @@ class Pacman:
     def update(self):
         move_pressed = self.move_pressed()
 
+        print(self.pacman.x, self.pacman.y)
+
         if not move_pressed:
             return
 

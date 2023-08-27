@@ -5,14 +5,14 @@ from map import check_move_point
 
 
 class Pacman:
-    def __init__(self, keys):
+    def __init__(self, keys, lives=3):
         self.keys = keys
         self.images = ["pacman_o", "pacman_or", "pacman_c", "pacman_cr"]
         self.pacman = Actor("pacman_o")
         self.pacman.keys_active = {'left': False, 'right': False, 'down': False, 'up': False}
         self.pacman.x = 290
         self.pacman.y = 560
-        self.lives = 3
+        self.lives = lives
         self.animation_time = 0.1
         self.animation = False
         self.dt = None
@@ -41,7 +41,7 @@ class Pacman:
     def draw(self, screen):
         self.pacman.draw()
         for live in range(self.lives):
-            screen.blit("pacman_o", (10 + live * 40, 15))
+            screen.blit("pacman_l", (10 + live * 20, 30))
 
     def move_pressed(self):
         pressed = any(value for value in self.pacman.keys_active.values())

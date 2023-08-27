@@ -11,6 +11,7 @@ from pgzero.builtins import Actor, keyboard, sounds
 from pacman_behavior import Pacman
 from ghost import Ghost
 from coins import Coins
+from time import time
 
 BLACK = 0, 0, 0
 GOLD = 255, 215, 0
@@ -26,16 +27,27 @@ ghost = Ghost()
 coins = Coins()
 
 POINTS = 0
+LEVEL = 3
 
 map = Actor("colorful_map", pos=(0, 60), anchor=(0,0))
 
 def draw():
+    global LEVEL
+
     screen.fill(BLACK)
     map.draw()
     coins.draw_coins()
     pacman.draw(screen)
     ghost.draw()
     screen.draw.text(f'{POINTS}', color=GOLD, fontsize=50, fontname='bungee-regular', topright=(WIDTH-10, 5), owidth = 1, ocolor=(100, 100, 100))
+    screen.draw.text(f'GOLD', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 15), owidth=1, ocolor=(100, 100, 100))
+    screen.draw.text(f'PACMAN', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 45), owidth=1, ocolor=(100, 100, 100))
+    screen.draw.text(f'Poziom {LEVEL}', color=GOLD, fontsize=20, fontname='bungee-regular', topleft=(8, 4), owidth=1, ocolor=(100, 100, 100))
+
+    if not ghost.enable:
+        time_left = time() - ghost.disable_time
+        screen.draw.text(f'POWER: {int(ghost.disable_max_time-time_left)}', color=(188, 19, 254), fontsize=20, fontname='bungee-regular', center=((WIDTH/2)-110, 15), owidth=1, ocolor=(100, 100, 100))
+
 
 def on_key_down(key):
     pacman.on_key_down(key)
@@ -44,7 +56,7 @@ def on_key_up(key):
     pacman.on_key_up(key)
 
 def update_by_coin():
-    global POINTS
+    global POINTS, LEVEL, coins
     if pacman.move_pressed():
         coin_type = coins.check_collision(pacman.pacman)
         if coin_type == "coin":
@@ -55,7 +67,17 @@ def update_by_coin():
             sounds.eating.play()
             ghost.disable_ghost()
         elif coin_type == "won":
-            pass
+            LEVEL += 1
+            POINTS += 1000
+            pacman.pacman.pos = pacman.start_pos
+            ghost.disable_max_time = max(3, 15 - (LEVEL-1))
+            ghost.enable_ghost()
+            for some_ghost in ghost.ghosts:
+                some_ghost.pos = some_ghost.start_pos
+                some_ghost.current_animation.stop()
+                some_ghost.in_center = True
+                some_ghost.move = False
+            coins = Coins()
         else:
             pass
 

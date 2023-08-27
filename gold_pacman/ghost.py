@@ -5,17 +5,12 @@ from map import get_possible_directions, get_distans, get_possible_directions_ne
 from time import time
 
 class Ghost:
-    def __init__(self):
+    def __init__(self, level=1):
         self.ghosts = [Actor(f'ghost{i}', pos=(250+(i*18), 360)) for i in range(1,5)]
         for ghost in self.ghosts:
-            ghost.dir = 1
-            ghost.last_dir = -100
             ghost.status = 0
             ghost.in_center = True
             ghost.start_pos = ghost.pos
-            ghost.decide_point = 0, 7
-            ghost.point = 16
-            ghost.ghost_moves= (ghost.point, 0), (0, -ghost.point), (-ghost.point, 0), (0, ghost.point)
             ghost.last_point_index = 0
             ghost.new_point_index = 0
             ghost.new_point = ghost.x, ghost.y

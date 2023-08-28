@@ -7,11 +7,13 @@ import pgzrun
 import sys
 
 from pgzero.screen import Screen
-from pgzero.builtins import Actor, keyboard, sounds
+from pgzero.builtins import Actor, keyboard, sounds, music
 from pacman_behavior import Pacman
 from ghost import Ghost
 from coins import Coins
 from time import time
+from best_players import BestPlayers
+from typing import Optional
 
 BLACK = 0, 0, 0
 GOLD = 255, 215, 0
@@ -25,6 +27,7 @@ screen: Screen
 pacman = Pacman(keys)
 ghost = Ghost()
 coins = Coins()
+best_players: Optional[BestPlayers] = None
 
 POINTS = 0
 LEVEL = 3
@@ -35,6 +38,9 @@ def draw():
     global LEVEL
 
     screen.fill(BLACK)
+    if not pacman.lives:
+        best_players.draw()
+        return
     map.draw()
     coins.draw_coins()
     pacman.draw(screen)
@@ -50,25 +56,47 @@ def draw():
 
 
 def on_key_down(key):
+    if not pacman.lives:
+        best_players.append_to_name(key)
+        if key.name == 'RETURN':
+            answer = best_players.change_color()
+            if answer == 'exit':
+                sys.exit()
+        return
     pacman.on_key_down(key)
 
 def on_key_up(key):
+    if not pacman.lives:
+        return
     pacman.on_key_up(key)
 
+def add_points(some_points):
+    global POINTS
+    POINTS += some_points
+    if POINTS % 15000 == 0:
+        pacman.lives += 1
+        sounds.new_live.play()
+        return 'sound'
+    return None
+
 def update_by_coin():
-    global POINTS, LEVEL, coins
+    global LEVEL, coins
     if pacman.move_pressed():
+        sounds.walk.play()
         coin_type = coins.check_collision(pacman.pacman)
         if coin_type == "coin":
-            POINTS += 10
-            sounds.eating.play()
+            sound = add_points(10)
+            if not sound:
+                sounds.eating.play()
         elif coin_type == "powerup":
-            POINTS += 100
-            sounds.eating.play()
+            sound = add_points(100)
+            if not sound:
+                sounds.powerup.play()
             ghost.disable_ghost()
         elif coin_type == "won":
             LEVEL += 1
-            POINTS += 1000
+            add_points(1000)
+            sounds.level_up.play()
             pacman.pacman.pos = pacman.start_pos
             ghost.disable_max_time = max(3, 15 - (LEVEL-1))
             ghost.enable_ghost()
@@ -82,15 +110,20 @@ def update_by_coin():
             pass
 
 def update_by_ghost():
-    global POINTS
+    if not pacman.lives:
+        best_players.set_score(POINTS)
+        return
     coll_type, optional_ghost = ghost.check_collision(pacman.pacman)
     if coll_type == 'ghost_busted':
-        POINTS += 100
+        add_points(100)
+        if not sounds:
+            sounds.eating.play()
         optional_ghost.pos = optional_ghost.start_pos
         optional_ghost.current_animation.stop()
         optional_ghost.in_center = True
         optional_ghost.move = False
     elif coll_type == 'pacman_busted':
+        sounds.lost_life.play()
         for some_ghost in ghost.ghosts:
             some_ghost.pos = some_ghost.start_pos
             some_ghost.current_animation.stop()
@@ -98,16 +131,18 @@ def update_by_ghost():
             some_ghost.move = False
         pacman.pacman.pos = pacman.start_pos
         pacman.lives -= 1
-        if not pacman.lives:
-            sys.exit(0)
-
     else:
         pass
 
 def update():
+    global best_players
+    if not best_players:
+        best_players = BestPlayers(screen)
     pacman.update()
     ghost.update(pacman.pacman.pos)
     update_by_coin()
     update_by_ghost()
 
+music.play('music')
+music.set_volume(0.2)
 pgzrun.go()

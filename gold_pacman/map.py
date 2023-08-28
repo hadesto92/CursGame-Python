@@ -166,7 +166,7 @@ def serch_direction(ghost):
             index_move = i
             distance_serach = int(distance)
 
-    print(index_move)
+    #print(index_move)
 
     return index_move, map_point[index_move][0]
 

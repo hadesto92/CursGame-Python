@@ -5,7 +5,7 @@ from map import check_move_point
 
 
 class Pacman:
-    def __init__(self, keys, lives=3):
+    def __init__(self, keys, lives=1):
         self.keys = keys
         self.images = ["pacman_o", "pacman_or", "pacman_c", "pacman_cr"]
         self.pacman = Actor("pacman_o")

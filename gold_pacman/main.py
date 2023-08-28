@@ -85,13 +85,11 @@ def update_by_coin():
         sounds.walk.play()
         coin_type = coins.check_collision(pacman.pacman)
         if coin_type == "coin":
-            sound = add_points(10)
-            if not sound:
-                sounds.eating.play()
+            add_points(10)
+            sounds.eating.play()
         elif coin_type == "powerup":
-            sound = add_points(100)
-            if not sound:
-                sounds.powerup.play()
+            add_points(100)
+            sounds.powerup.play()
             ghost.disable_ghost()
         elif coin_type == "won":
             LEVEL += 1

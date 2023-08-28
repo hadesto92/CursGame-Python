@@ -54,7 +54,7 @@ class BestPlayers:
                 better_than = i
                 break
             self.screen.draw.text(f'{name}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(100, 100+40*i), owidth = 1, ocolor=(100, 100, 100))
-            self.screen.draw.text(f'{name}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(400, 100 + 40 * i), owidth=1, ocolor=(100, 100, 100))
+            self.screen.draw.text(f'{score}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(400, 100 + 40 * i), owidth=1, ocolor=(100, 100, 100))
 
         if not self.name:
             self.screen.draw.text(f'_', color=self.new_player_color, fontsize=32, fontname='bungee-regular', topleft=(100, 100+40*better_than), owidth = 1, ocolor=(100, 100, 100))
@@ -65,4 +65,4 @@ class BestPlayers:
         for i, line in enumerate(self.best_player[better_than:]):
             name, score = line
             self.screen.draw.text(f'{name}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(100, 100 + 40 * (i+better_than+1)), owidth=1, ocolor=(100, 100, 100))
-            self.screen.draw.text(f'{name}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(400, 100 + 40 * (i+better_than+1)), owidth=1, ocolor=(100, 100, 100))
+            self.screen.draw.text(f'{score}', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(400, 100 + 40 * (i+better_than+1)), owidth=1, ocolor=(100, 100, 100))

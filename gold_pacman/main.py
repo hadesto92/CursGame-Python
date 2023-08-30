@@ -41,7 +41,7 @@ map = Actor("colorful_map", pos=(0, 60), anchor=(0,0))
 def draw():
     global LEVEL
 
-    if not main_menu.main_menu_bool:
+    if main_menu.play_bool:
         screen.fill(BLACK)
         if not pacman.lives:
             best_players.draw()
@@ -59,7 +59,19 @@ def draw():
             time_left = time() - ghost.disable_time
             screen.draw.text(f'POWER: {int(ghost.disable_max_time-time_left)}', color=(188, 19, 254), fontsize=20, fontname='bungee-regular', center=((WIDTH/2)-110, 15), owidth=1, ocolor=(100, 100, 100))
     else:
-        main_menu.main_menu()
+        if main_menu.main_menu_bool:
+            screen.fill(BLACK)
+            main_menu.main_menu()
+        if main_menu.highscore_bool:
+            screen.fill(BLACK)
+            main_menu.highscore()
+        if main_menu.option_bool:
+            screen.fill(BLACK)
+            main_menu.option()
+        if main_menu.description_bool:
+            screen.fill(BLACK)
+            main_menu.description()
+
 
 
 def on_key_down(key):
@@ -68,7 +80,8 @@ def on_key_down(key):
         if key.name == 'RETURN':
             answer = best_players.change_color()
             if answer == 'exit':
-                sys.exit()
+                main_menu.main_menu_bool = True
+                main_menu.play_bool = False
         return
     pacman.on_key_down(key)
 
@@ -167,7 +180,7 @@ def update():
         update_by_coin()
         update_by_ghost()
     else:
-        main_menu = Menu(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
+        main_menu.update(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
 
 music.play('music')
 music.set_volume(0.2)

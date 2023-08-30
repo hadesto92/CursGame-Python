@@ -14,6 +14,7 @@ from coins import Coins
 from time import time
 from best_players import BestPlayers
 from typing import Optional
+from menu import Menu
 
 BLACK = 0, 0, 0
 GOLD = 255, 215, 0
@@ -23,11 +24,14 @@ HEIGHT = 660
 
 keys: keyboard
 screen: Screen
+mouse_pos = 0, 0
+mouse_left_button = False
 
 pacman = Pacman(keys)
 ghost = Ghost()
 coins = Coins()
 best_players: Optional[BestPlayers] = None
+main_menu: Optional[Menu] = None
 
 POINTS = 0
 LEVEL = 3
@@ -37,22 +41,25 @@ map = Actor("colorful_map", pos=(0, 60), anchor=(0,0))
 def draw():
     global LEVEL
 
-    screen.fill(BLACK)
-    if not pacman.lives:
-        best_players.draw()
-        return
-    map.draw()
-    coins.draw_coins()
-    pacman.draw(screen)
-    ghost.draw()
-    screen.draw.text(f'{POINTS}', color=GOLD, fontsize=50, fontname='bungee-regular', topright=(WIDTH-10, 5), owidth = 1, ocolor=(100, 100, 100))
-    screen.draw.text(f'GOLD', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 15), owidth=1, ocolor=(100, 100, 100))
-    screen.draw.text(f'PACMAN', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 45), owidth=1, ocolor=(100, 100, 100))
-    screen.draw.text(f'Poziom {LEVEL}', color=GOLD, fontsize=20, fontname='bungee-regular', topleft=(8, 4), owidth=1, ocolor=(100, 100, 100))
+    if not main_menu.main_menu_bool:
+        screen.fill(BLACK)
+        if not pacman.lives:
+            best_players.draw()
+            return
+        map.draw()
+        coins.draw_coins()
+        pacman.draw(screen)
+        ghost.draw()
+        screen.draw.text(f'{POINTS}', color=GOLD, fontsize=50, fontname='bungee-regular', topright=(WIDTH-10, 5), owidth = 1, ocolor=(100, 100, 100))
+        screen.draw.text(f'GOLD', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 15), owidth=1, ocolor=(100, 100, 100))
+        screen.draw.text(f'PACMAN', color=GOLD, fontsize=30, fontname='bungee-regular', center=((WIDTH/2)+20, 45), owidth=1, ocolor=(100, 100, 100))
+        screen.draw.text(f'Poziom {LEVEL}', color=GOLD, fontsize=20, fontname='bungee-regular', topleft=(8, 4), owidth=1, ocolor=(100, 100, 100))
 
-    if not ghost.enable:
-        time_left = time() - ghost.disable_time
-        screen.draw.text(f'POWER: {int(ghost.disable_max_time-time_left)}', color=(188, 19, 254), fontsize=20, fontname='bungee-regular', center=((WIDTH/2)-110, 15), owidth=1, ocolor=(100, 100, 100))
+        if not ghost.enable:
+            time_left = time() - ghost.disable_time
+            screen.draw.text(f'POWER: {int(ghost.disable_max_time-time_left)}', color=(188, 19, 254), fontsize=20, fontname='bungee-regular', center=((WIDTH/2)-110, 15), owidth=1, ocolor=(100, 100, 100))
+    else:
+        main_menu.main_menu()
 
 
 def on_key_down(key):
@@ -132,14 +139,35 @@ def update_by_ghost():
     else:
         pass
 
+def on_mouse_move(pos):
+    global mouse_pos
+    mouse_pos = pos
+
+def on_mouse_down(button):
+    global mouse_left_button
+    if button == 1:
+        mouse_left_button = True
+
+def on_mouse_up(button):
+    global mouse_left_button
+    if button == 1:
+        mouse_left_button = False
+
+
 def update():
-    global best_players
+    global best_players, main_menu
     if not best_players:
         best_players = BestPlayers(screen)
-    pacman.update()
-    ghost.update(pacman.pacman.pos)
-    update_by_coin()
-    update_by_ghost()
+    if not main_menu:
+        main_menu = Menu(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
+
+    if main_menu.play_bool:
+        pacman.update()
+        ghost.update(pacman.pacman.pos)
+        update_by_coin()
+        update_by_ghost()
+    else:
+        main_menu = Menu(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
 
 music.play('music')
 music.set_volume(0.2)

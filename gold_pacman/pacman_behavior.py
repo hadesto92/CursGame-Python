@@ -19,24 +19,43 @@ class Pacman:
         self.start_pos = self.pacman.x, self.pacman.y
 
     def on_key_down(self, key):
-        if key == self.keys.RIGHT:
-            self.pacman.keys_active['right'] = True
-        if key == self.keys.LEFT:
-            self.pacman.keys_active['left'] = True
-        if key == self.keys.UP:
-            self.pacman.keys_active['up'] = True
-        if key == self.keys.DOWN:
-            self.pacman.keys_active['down'] = True
+
+        options_key = []
+
+        with open('conf.txt', 'r') as file:
+            for line in file:
+                splitted_line = line.split()
+                options_key.append((splitted_line[0], splitted_line[1]))
+
+        for name, keys in options_key:
+            print(key.name, name, keys)
+            if name == 'RIGHT:' and key.name == keys:
+                self.pacman.keys_active['right'] = True
+            if name == 'LEFT:' and key.name == keys:
+                self.pacman.keys_active['left'] = True
+            if name == 'UP:' and key.name == keys:
+                self.pacman.keys_active['up'] = True
+            if name == 'DOWN:' and key.name == keys:
+                self.pacman.keys_active['down'] = True
 
     def on_key_up(self, key):
-        if key == self.keys.RIGHT:
-            self.pacman.keys_active['right'] = False
-        if key == self.keys.LEFT:
-            self.pacman.keys_active['left'] = False
-        if key == self.keys.UP:
-            self.pacman.keys_active['up'] = False
-        if key == self.keys.DOWN:
-            self.pacman.keys_active['down'] = False
+
+        options_key = []
+
+        with open('conf.txt', 'r') as file:
+            for line in file:
+                splitted_line = line.split()
+                options_key.append((splitted_line[0], splitted_line[1]))
+
+        for name, keys in options_key:
+            if name == 'RIGHT:' and key.name == keys:
+                self.pacman.keys_active['right'] = False
+            if name == 'LEFT:' and key.name == keys:
+                self.pacman.keys_active['left'] = False
+            if name == 'UP:' and key.name == keys:
+                self.pacman.keys_active['up'] = False
+            if name == 'DOWN:' and key.name == keys:
+                self.pacman.keys_active['down'] = False
 
     def draw(self, screen):
         self.pacman.draw()

@@ -4,7 +4,6 @@ import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = f'{x},{y}'
 
 import pgzrun
-import sys
 
 from pgzero.screen import Screen
 from pgzero.builtins import Actor, keyboard, sounds, music
@@ -26,6 +25,8 @@ keys: keyboard
 screen: Screen
 mouse_pos = 0, 0
 mouse_left_button = False
+key_name = ''
+key_clicked = False
 
 pacman = Pacman(keys)
 ghost = Ghost()
@@ -40,7 +41,7 @@ map = Actor("colorful_map", pos=(0, 60), anchor=(0,0))
 
 def draw():
     global LEVEL
-
+    #print('Menu: ', main_menu.main_menu_bool, ', play: ', main_menu.play_bool)
     if main_menu.play_bool:
         screen.fill(BLACK)
         if not pacman.lives:
@@ -75,6 +76,9 @@ def draw():
 
 
 def on_key_down(key):
+
+    global key_name, key_clicked
+
     if not pacman.lives:
         best_players.append_to_name(key)
         if key.name == 'RETURN':
@@ -85,10 +89,16 @@ def on_key_down(key):
         return
     pacman.on_key_down(key)
 
+    key_name = key.name
+    key_clicked = True
+
 def on_key_up(key):
+    global key_clicked
+
     if not pacman.lives:
         return
     pacman.on_key_up(key)
+    key_clicked = False
 
 def add_points(some_points):
     global POINTS
@@ -172,7 +182,7 @@ def update():
     if not best_players:
         best_players = BestPlayers(screen)
     if not main_menu:
-        main_menu = Menu(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
+        main_menu = Menu(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button, key_name, key_clicked)
 
     if main_menu.play_bool:
         pacman.update()
@@ -180,7 +190,7 @@ def update():
         update_by_coin()
         update_by_ghost()
     else:
-        main_menu.update(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button)
+        main_menu.update(screen, WIDTH, HEIGHT, mouse_pos, mouse_left_button, key_name, key_clicked)
 
 music.play('music')
 music.set_volume(0.2)

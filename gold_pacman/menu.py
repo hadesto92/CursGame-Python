@@ -1,8 +1,9 @@
 import pygame
-from pgzero.builtins import Rect
-
-from best_players import BestPlayers
 import sys
+
+from pgzero.builtins import Rect
+from time import time
+from best_players import BestPlayers
 
 GOLD = 255, 215, 0
 RED = 255, 0, 0
@@ -32,10 +33,15 @@ class Menu:
         self.save_pos = (width/2)+100, height-100
         self.reset_pos = (width/2)-65, height-100
         self.option_button_pos = (width/2)-100, height/2
+        self.logo_pos = (width/2)-180, 50
         self.flage = False
         self.key_name = key_name
         self.key_clicked = key_clicked
         self.options = []
+        self.disable_time = time()
+        self.disable_max_time = 1
+        self.time_flage = False
+        self.timer = 0.5
         with open('conf.txt', 'r') as file:
             for line in file:
                 splitted_line = line.split()
@@ -50,9 +56,13 @@ class Menu:
         self.mouse_clicked = mouse_clicked
         self.key_name = key_name
         self.key_clicked = key_clicked
+        self.timer -= 1 / 60
 
     def main_menu(self):
         if self.main_menu_bool:
+
+            self.screen.draw.text(f'GOLD PACMAN', color=GOLD, fontsize=50, fontname='bungee-regular', topleft=(self.logo_pos), owidth=1, ocolor=GREY)
+
             if self.play_pos[0] < self.mouse_pos[0] < self.play_pos[0]+95 and self.play_pos[1] < self.mouse_pos[1] < self.play_pos[1]+35:
                 self.screen.draw.rect(Rect((self.play_pos), (95, 35)), RED)
                 if self.mouse_clicked:
@@ -97,6 +107,16 @@ class Menu:
             else:
                 self.screen.draw.rect(Rect((self.exit_pos), (95, 35)), BLACK)
             self.screen.draw.text(f'EXIT', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=(self.exit_pos), owidth=1, ocolor=GREY)
+
+            if self.time_flage:
+                self.screen.blit(pygame.transform.scale(pygame.image.load('images\pacman_o.png'),(100, 100)), ((self.width/2)-50, self.exit_pos[1]+150))
+            else:
+                self.screen.blit(pygame.transform.scale(pygame.image.load('images\pacman_c.png'),(100, 100)), ((self.width/2)-50, self.exit_pos[1]+150))
+
+            if self.timer <= 0:
+                self.time_flage = not self.time_flage
+                self.timer = 0.5
+
         else:
             self.main_menu_bool = True
             self.play_bool = False
@@ -139,7 +159,15 @@ class Menu:
 
     def description(self):
         self.main_menu_bool = False
-        self.screen.draw.text(f'IN PROGRESS', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=((self.width / 2 - 100), self.height / 2), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f'AUTOR: KAROL "HADESTO" LACH', color=GOLD, fontsize=32, fontname='bungee-regular', topleft=((self.width/2)-280, (self.height/2)-300), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f'NA PODSTAWIE KURSU', color=GOLD, fontsize=32, fontname='bungee-regular',topleft=((self.width/2)-280, (self.height/2)-250), owidth=1, ocolor=GREY)
+
+        self.screen.draw.text(f"Zagraj PACMAN'em i zbieraj monety!", color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2) - 150), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f'Uważaj na duszku, chcą Ciebie złapać!', color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2) - 100), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f'POWERUP daje możliwość', color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2) - 50), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f' na kilka sekund złapać duszka!', color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2)), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f'Z każdym przejściem poziomu', color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2)+50), owidth=1, ocolor=GREY)
+        self.screen.draw.text(f' gra staje się coraz trudniejsza!', color=GOLD, fontsize=25, fontname='bungee-regular', topleft=((self.width / 2) - 280, (self.height / 2) + 100), owidth=1, ocolor=GREY)
 
         if self.back_pos[0] < self.mouse_pos[0] < self.back_pos[0] + 95 and self.back_pos[1] < self.mouse_pos[1] < self.back_pos[1] + 35:
             self.screen.draw.rect(Rect((self.back_pos), (95, 35)), RED)

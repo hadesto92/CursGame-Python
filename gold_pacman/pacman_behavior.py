@@ -28,7 +28,7 @@ class Pacman:
                 options_key.append((splitted_line[0], splitted_line[1]))
 
         for name, keys in options_key:
-            print(key.name, name, keys)
+            #print(key.name, name, keys)
             if name == 'RIGHT:' and key.name == keys:
                 self.pacman.keys_active['right'] = True
             if name == 'LEFT:' and key.name == keys:
